@@ -1881,6 +1881,9 @@ def main():
 
         st.write(df_concat[["ParentLocation", "Location", "Period", "Sex", "Adult mortality rate"]].sort_values(by="Adult mortality rate", ascending= False))
 
+        st.subheader("Hala Üzerinde Çalışılmaktadır. Teşekkürler c: ")
+        st.balloons()
+
     
 
 
