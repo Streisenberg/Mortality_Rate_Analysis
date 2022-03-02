@@ -4,7 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
 import sys  
-import os 
+import os
+import math
+from geopy.geocoders import Nominatim
+import plotly_express as px 
 
 both = pd.read_csv("Both_sexes.csv")
 male = pd.read_csv("male.csv")
@@ -27,3 +30,24 @@ def yearGraph(year, table, location):
     plt.xlabel("Ölüm Oranı")
     plt.ylabel("Ülkeler")
     st.pyplot(fig)
+
+def mapping(country, location, lati, longi):
+    loc_sum = both[both["ParentLocation"] == location].groupby(["Location"]).sum().reset_index(). sort_values(by = "Adult mortality rate", ascending = False)
+    loc_sum = loc_sum[["Location", "Adult mortality rate"]]
+    if st.checkbox("{} Haritası v Ölüm Oranları Grafiği".format(country)):
+        geolocator = Nominatim(user_agent="myGeolocator")
+        country_loc = loc_sum["Location"].unique()
+        for i in country_loc:
+            def func(i):
+                return geolocator.geocode(i).latitude
+        loc_sum["latitude"] = loc_sum["Location"].apply(func)
+        for i in country_loc:
+            def func2(i):
+                return geolocator.geocode(i).longitude
+        loc_sum["longitude"] = loc_sum["Location"].apply(func2)
+
+        fig = px.scatter_mapbox(loc_sum, lat = "latitude", lon = "longitude", hover_name="Location", hover_data = ["Adult mortality rate"], color = "Adult mortality rate", size = "Adult mortality rate", size_max = 30, opacity = 0.5, center = {"lat": lati, "lon": longi}, zoom = 2, height = 800, width = 800)
+        fig.update_layout(mapbox_style = "open-street-map")
+        fig.update_layout(margin = {"r": 0, "t": 0, "l": 0, "b": 0})
+        fig.update_layout(title_text = "{} Yetişkin Ölüm Oranları".format(country))
+        st.plotly_chart(fig)
