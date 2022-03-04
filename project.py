@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import sys  
 import os 
-from myfunctions import createTable, yearTable, yearGraph, mapping
+from myfunctions import createTable, yearTable, yearGraph, mapping, comparison
 import math
 from geopy.geocoders import Nominatim
 import plotly_express as px
@@ -18,7 +18,9 @@ female = pd.read_csv("female.csv")
 
 def main():
 
-    st.title("Hi-Kod Adult Mortality Rate Project")
+    st.title("Hi-Kod Adult Mortality Rate Analysis")
+
+    st.write("Yetişkin Ölüm Oranı, 15 yaşına ulaşmış kişilerin 60 yaşına gelmeden ölme olasılığını göstermektedir. (1.000 kişi başına). Başka bir deyişle; 150 değeri, 15 yaşına ulaşmış 1.000 kişiden 150'sinin 60 yaşına gelmeden ölmesinin ve 850'sinin 60 yaşına kadar hayatta kalmasının beklendiği anlamına gelir. ")
 
     sidebar = st.sidebar.radio("İşleminizi Seçin: ", ["Genel Analiz", "Kadın-Erkek Karşılaştırma"])
 
@@ -27,7 +29,7 @@ def main():
         select_box = st.selectbox("Veriler", ["Her iki cins", "Erkek", "Dişi"])
 
         if select_box == "Her iki cins":
-            st.write(both)
+            st.dataframe(both)
             if st.button("Genel Grafiği Görüntüle (Her İki Cins)"):
                 both_mean = both[["ParentLocation", "Period", "Adult mortality rate"]].groupby(["ParentLocation", "Period"]).mean().reset_index().rename(columns = {"Adult mortality rate": "mean"})
                 fig = plt.figure(figsize = (17, 10))
@@ -1775,9 +1777,25 @@ def main():
         df_concat = pd.concat([female, male])
 
         st.write(df_concat[["ParentLocation", "Location", "Period", "Sex", "Adult mortality rate"]].sort_values(by="Adult mortality rate", ascending= False))
+        selection = st.selectbox("Bölge Seçiniz", ["Afrika", "Amerika", "Avrupa", "Batı Pasifik", "Doğu Akdeniz", "Güneydoğu Asya"])
 
-        st.subheader("Hala Üzerinde Çalışılmaktadır. Teşekkürler c: ")
-        st.balloons()
+        if selection == "Afrika":
+            comparison("Afrikadaki", "Africa")
+            
+        elif selection == "Amerika":
+            comparison("Amerikadaki", "Americas")
+        elif selection == "Avrupa":
+            comparison("Avrupadaki", "Europe")
+        elif selection == "Batı Pasifik":
+            comparison("Batı Pasifikteki", "Western Pacific")
+        elif selection == "Doğu Akdeniz":
+            comparison("Doğu Akdenizdeki", "Eastern Mediterranean")
+        elif selection == "Güneydoğu Asya":
+            comparison("Güneydoğu Asyadaki", "South-East Asia")
+        
+
+        #st.subheader("Hala Üzerinde Çalışılmaktadır. Teşekkürler c: ")
+        #st.balloons()
 
     
 

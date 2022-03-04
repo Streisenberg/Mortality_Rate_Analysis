@@ -51,3 +51,40 @@ def mapping(country, location, lati, longi):
         fig.update_layout(margin = {"r": 0, "t": 0, "l": 0, "b": 0})
         fig.update_layout(title_text = "{} Yetişkin Ölüm Oranları".format(country))
         st.plotly_chart(fig)
+
+def comparison(country, location):
+    radio = st.radio("Seçiminizi Yapın: ", ["{} ortalama ölüm oranı EN YÜKSEK 10 ülke".format(country),"{} ortalama ölüm oranı EN DÜŞÜK 10 ülke".format(country)])
+    subset = both[both["ParentLocation"] == location]
+    both_location = subset.groupby(["Location"]).mean().reset_index().sort_values(by= "Adult mortality rate", ascending = False)
+    if radio == "{} ortalama ölüm oranı EN YÜKSEK 10 ülke".format(country):
+        st.write(both_location[["Location", "Adult mortality rate"]].head(10))
+
+        if st.button("Karşılaştırma Grafiği"):
+            liste = []
+            for i in both_location["Location"].head(10):
+                liste.append(i)
+            f_m = pd.concat([female, male])
+            top5 = f_m[f_m["Location"].isin(liste)]
+            top5 = top5[["Location", "Sex", "Adult mortality rate"]].groupby(["Location", "Sex"]).mean().reset_index()
+            fig = plt.figure(figsize=(12,9))
+            hue_order = ["Male", "Female"]
+            sns.barplot(x = "Location", y = "Adult mortality rate", hue = "Sex", hue_order= hue_order, data = top5)
+            plt.xticks(rotation = 45)
+            st.pyplot(fig)
+        
+    elif radio == "{} ortalama ölüm oranı EN DÜŞÜK 10 ülke".format(country):
+        st.write(both_location[["Location", "Adult mortality rate"]].tail(10))
+        if st.button("Karşılaştırma Grafiği"):
+            liste = []
+            for i in both_location["Location"].tail(10):
+                liste.append(i)
+            df_concat = pd.concat([female, male])
+            bottom5 = df_concat[df_concat["Location"].isin(liste)]
+            bottom5 = bottom5[["Location", "Sex", "Adult mortality rate"]].groupby(["Location", "Sex"]).mean().reset_index()
+            fig = plt.figure(figsize=(12,9))
+            hue_order = ["Male", "Female"]
+            sns.barplot(x = "Location", y = "Adult mortality rate", hue = "Sex", hue_order= hue_order, data = bottom5)
+            plt.xticks(rotation = 45)
+            st.pyplot(fig)
+
+
