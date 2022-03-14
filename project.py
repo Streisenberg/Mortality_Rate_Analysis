@@ -47,6 +47,7 @@ def main():
                 plt.xlabel("Yıl", fontsize = 14, fontweight = "bold")
                 plt.ylabel("Ortalama", fontsize = 14, fontweight = "bold")
                 st.pyplot(fig)
+
         elif select_box == "Dişi":
             st.write(female)
             if st.button("Genel Grafiği Görüntüle (Dişi)"):
@@ -1781,7 +1782,6 @@ def main():
 
         if selection == "Afrika":
             comparison("Afrikadaki", "Africa")
-            
         elif selection == "Amerika":
             comparison("Amerikadaki", "Americas")
         elif selection == "Avrupa":
@@ -1794,8 +1794,7 @@ def main():
             comparison("Güneydoğu Asyadaki", "South-East Asia")
         
 
-        #st.subheader("Hala Üzerinde Çalışılmaktadır. Teşekkürler c: ")
-        #st.balloons()
+        
 
     
 
